@@ -22,7 +22,7 @@ pip install -r requirements.txt
 Run the tests:
 
 ```powershell
-pytest
+-pytest
 ```
 
 Run the notebook smoke command from a clean environment:
