@@ -47,14 +47,12 @@ Thumbs.db
 .env.*.local
 *.env
 
-# Optional: data and outputs (uncomment if you want to ignore data files)
-# data/
-# *.csv
-# *.xlsx
-# *.db
+# Generated task outputs
+# Covers training/evaluation/analysis artifacts, PDFs, JSON summaries,
+# NPZ checkpoints, and notebook-generated images under artifacts/.
+artifacts/
 
 # Wheels / compiled binary
 *.so
 
 # End of file
-

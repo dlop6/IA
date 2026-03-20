@@ -22,6 +22,11 @@ from .td_features import (
     legal_actions,
 )
 from .task2_eval import CONDITIONS, run_task2_evaluation, run_task2_match
+from .task2_pipeline import (
+    DEFAULT_TASK2_CONFIG,
+    build_default_task2_epsilon_schedule,
+    run_task2_pipeline,
+)
 from .task2_analysis import (
     export_task2_analysis_artifacts,
     extract_representative_matches,
@@ -36,7 +41,7 @@ from .task2_report import (
 )
 from .training import run_self_play_episode, train_self_play
 from .training_metrics import TrainingStatsTracker
-from .visualization import board_to_text, display_board, print_board
+from .visualization import board_to_text, create_board_figure, display_board, print_board
 
 __all__ = [
     "ACTION_FEATURE_LENGTH",
@@ -44,6 +49,7 @@ __all__ = [
     "BOARD_FEATURE_LENGTH",
     "Connect4",
     "ConstantEpsilonSchedule",
+    "DEFAULT_TASK2_CONFIG",
     "LANDING_ROW_FEATURE_LENGTH",
     "DRAW_REWARD",
     "EpsilonSchedule",
@@ -59,7 +65,9 @@ __all__ = [
     "LinearDecayEpsilonSchedule",
     "WIN_REWARD",
     "board_to_text",
+    "build_default_task2_epsilon_schedule",
     "create_task2_results_figure",
+    "create_board_figure",
     "display_board",
     "encode_board",
     "encode_state_action",
@@ -81,6 +89,7 @@ __all__ = [
     "run_self_play_episode",
     "run_task2_evaluation",
     "run_task2_match",
+    "run_task2_pipeline",
     "summarize_task2_analysis",
     "train_self_play",
     "terminal_reward",

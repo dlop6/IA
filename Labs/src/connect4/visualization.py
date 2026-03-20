@@ -21,8 +21,8 @@ def print_board(game):
     print(board_to_text(game))
 
 
-def display_board(game, title="", last_move=None):
-    """Render the board in the same style as the original notebook."""
+def create_board_figure(game, title="", last_move=None):
+    """Create a matplotlib figure for the board using the notebook's original style."""
     colors = {
         Connect4.EMPTY: "white",
         Connect4.PLAYER1: "#FF4444",
@@ -73,4 +73,11 @@ def display_board(game, title="", last_move=None):
         ax.set_title(title, fontsize=14, fontweight="bold", color="white", pad=10)
 
     plt.tight_layout()
+    return fig, ax
+
+
+def display_board(game, title="", last_move=None):
+    """Render the board in the same style as the original notebook."""
+    fig, _ = create_board_figure(game, title=title, last_move=last_move)
     plt.show()
+    return fig
