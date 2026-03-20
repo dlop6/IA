@@ -1,4 +1,4 @@
-from .agents import AlphaBetaAgent, MinimaxAgent, RandomAgent, SmartAlphaBetaAgent
+from .agents import AlphaBetaAgent, MinimaxAgent, RandomAgent, SmartAlphaBetaAgent, TDQLearningAgent
 from .evaluation import play_ai_vs_random, play_human_vs_ai, play_match, run_ai_vs_random_series
 from .game import Connect4
 from .heuristics import evaluate, evaluate_window
@@ -24,6 +24,7 @@ __all__ = [
     "RandomAgent",
     "STATE_ACTION_FEATURE_LENGTH",
     "SmartAlphaBetaAgent",
+    "TDQLearningAgent",
     "board_to_text",
     "display_board",
     "encode_board",
