@@ -22,6 +22,18 @@ from .td_features import (
     legal_actions,
 )
 from .task2_eval import CONDITIONS, run_task2_evaluation, run_task2_match
+from .task2_analysis import (
+    export_task2_analysis_artifacts,
+    extract_representative_matches,
+    replay_match_states,
+    summarize_task2_analysis,
+)
+from .task2_report import (
+    create_task2_results_figure,
+    export_task2_results_pdf,
+    extract_task2_result_counts,
+    load_task2_evaluation_summary,
+)
 from .training import run_self_play_episode, train_self_play
 from .training_metrics import TrainingStatsTracker
 from .visualization import board_to_text, display_board, print_board
@@ -47,21 +59,29 @@ __all__ = [
     "LinearDecayEpsilonSchedule",
     "WIN_REWARD",
     "board_to_text",
+    "create_task2_results_figure",
     "display_board",
     "encode_board",
     "encode_state_action",
     "evaluate",
     "evaluate_window",
+    "export_task2_analysis_artifacts",
+    "export_task2_results_pdf",
+    "extract_representative_matches",
+    "extract_task2_result_counts",
     "is_legal_action",
     "legal_actions",
+    "load_task2_evaluation_summary",
     "play_ai_vs_random",
     "play_human_vs_ai",
     "play_match",
     "print_board",
+    "replay_match_states",
     "run_ai_vs_random_series",
     "run_self_play_episode",
     "run_task2_evaluation",
     "run_task2_match",
+    "summarize_task2_analysis",
     "train_self_play",
     "terminal_reward",
     "transition_reward",
