@@ -21,6 +21,7 @@ from .td_features import (
     is_legal_action,
     legal_actions,
 )
+from .training import run_self_play_episode, train_self_play
 from .training_metrics import TrainingStatsTracker
 from .visualization import board_to_text, display_board, print_board
 
@@ -56,6 +57,8 @@ __all__ = [
     "play_match",
     "print_board",
     "run_ai_vs_random_series",
+    "run_self_play_episode",
+    "train_self_play",
     "terminal_reward",
     "transition_reward",
 ]
