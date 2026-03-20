@@ -21,6 +21,7 @@ from .td_features import (
     is_legal_action,
     legal_actions,
 )
+from .task2_eval import CONDITIONS, run_task2_evaluation, run_task2_match
 from .training import run_self_play_episode, train_self_play
 from .training_metrics import TrainingStatsTracker
 from .visualization import board_to_text, display_board, print_board
@@ -42,6 +43,7 @@ __all__ = [
     "SmartAlphaBetaAgent",
     "TDQLearningAgent",
     "TrainingStatsTracker",
+    "CONDITIONS",
     "LinearDecayEpsilonSchedule",
     "WIN_REWARD",
     "board_to_text",
@@ -58,6 +60,8 @@ __all__ = [
     "print_board",
     "run_ai_vs_random_series",
     "run_self_play_episode",
+    "run_task2_evaluation",
+    "run_task2_match",
     "train_self_play",
     "terminal_reward",
     "transition_reward",
