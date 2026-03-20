@@ -65,6 +65,10 @@ class TDQLearningAgent(BaseAgent):
             return self.rng.choice(actions)
         return self.greedy_action(game)
 
+    def set_epsilon(self, epsilon):
+        """Update the agent's exploration rate."""
+        self.epsilon = float(epsilon)
+
     def max_next_q_value(self, next_game):
         """Return the max Q-value over legal actions in the next state."""
         actions = legal_actions(next_game)
