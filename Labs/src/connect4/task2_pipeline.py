@@ -9,12 +9,15 @@ from .training import train_self_play
 
 DEFAULT_TASK2_CONFIG = {
     "training": {
-        "episodes": 5000,
-        "learning_rate": 0.1,
+        "episodes": 500,
+        "learning_rate": 0.01,
         "discount": 0.99,
         "initial_epsilon": 1.0,
         "epsilon_end": 0.1,
         "checkpoint_interval": 500,
+        "snapshot_start_episode": 1001,
+        "snapshot_interval": 500,
+        "frozen_opponent_probability": 0.5,
         "seed": 42,
         "stats_window_size": 200,
     },
@@ -77,6 +80,9 @@ def run_task2_pipeline(
         initial_epsilon=training_defaults["initial_epsilon"],
         epsilon_schedule=schedule,
         checkpoint_interval=training_defaults["checkpoint_interval"],
+        snapshot_start_episode=training_defaults["snapshot_start_episode"],
+        snapshot_interval=training_defaults["snapshot_interval"],
+        frozen_opponent_probability=training_defaults["frozen_opponent_probability"],
         output_dir=training_output_dir,
         seed=training_defaults["seed"],
         stats_window_size=training_defaults["stats_window_size"],

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from connect4 import Connect4, TDQLearningAgent
 
@@ -14,14 +15,14 @@ def test_q_value_matches_dot_product():
     game = play_moves([3, 2, 3, 4, 5])
     agent = TDQLearningAgent(ai_player=game.current_player)
     features = agent.feature_vector(game, 0)
-    weights = np.arange(features.shape[0], dtype=np.float32)
+    weights = np.arange(features.shape[0], dtype=np.float64)
     agent.weights = weights.copy()
 
     expected = float(np.dot(weights, features))
     assert agent.q_value(game, 0) == expected
 
 
-def test_terminal_update_matches_expected_weight_change():
+def test_terminal_update_matches_expected_weight_change_with_clipping():
     game = play_moves([3, 2, 3, 4, 5])
     next_game = game.copy()
     agent = TDQLearningAgent(
@@ -33,14 +34,14 @@ def test_terminal_update_matches_expected_weight_change():
     initial = agent.weights.copy()
     features = agent.feature_vector(game, 0)
 
-    td_error = agent.update(game, 0, reward=1.0, next_game=next_game, done=True)
+    td_error = agent.update(game, 0, reward=10.0, next_game=next_game, done=True)
     expected = initial + 0.5 * 1.0 * features
 
     assert td_error == 1.0
     assert np.allclose(agent.weights, expected)
 
 
-def test_non_terminal_update_matches_q_learning_formula():
+def test_non_terminal_update_clips_large_td_error():
     game = play_moves([3, 2, 3, 4, 5])
     next_game = game.copy()
     next_game.drop_piece(0)
@@ -51,19 +52,25 @@ def test_non_terminal_update_matches_q_learning_formula():
         discount=0.8,
         epsilon=0.0,
     )
-    agent.weights = np.ones_like(agent.weights, dtype=np.float32) * 0.1
+    agent.weights = np.ones_like(agent.weights, dtype=np.float64) * 10.0
 
     features = agent.feature_vector(game, 0)
     current_q = float(np.dot(agent.weights, features))
-    max_next_q = max(agent.q_value(next_game, action) for action in next_game.actions())
-    target = 0.3 + 0.8 * max_next_q
-    expected_td_error = target - current_q
-    expected_weights = agent.weights.copy() + 0.25 * expected_td_error * features
-
     td_error = agent.update(game, 0, reward=0.3, next_game=next_game, done=False)
 
-    assert np.isclose(td_error, expected_td_error)
-    assert np.allclose(agent.weights, expected_weights)
+    assert td_error == -1.0
+    assert np.allclose(agent.weights, np.ones_like(agent.weights, dtype=np.float64) * 10.0 - 0.25 * features)
+    assert current_q > 1.0
+
+
+def test_update_raises_on_nonfinite_weights():
+    game = play_moves([3, 2, 3, 4, 5])
+    next_game = game.copy()
+    agent = TDQLearningAgent(ai_player=game.current_player)
+    agent.weights[:] = np.nan
+
+    with pytest.raises(ValueError, match="contains non-finite values"):
+        agent.update(game, 0, reward=1.0, next_game=next_game, done=True)
 
 
 def test_epsilon_zero_selects_greedy_action():
@@ -93,13 +100,14 @@ def test_save_and_load_round_trip(tmp_path):
         discount=0.85,
         epsilon=0.15,
     )
-    agent.weights = np.linspace(-1.0, 1.0, agent.weights.shape[0], dtype=np.float32)
+    agent.weights = np.linspace(-1.0, 1.0, agent.weights.shape[0], dtype=np.float64)
     path = tmp_path / "td_agent.npz"
 
     agent.save(path)
     loaded = TDQLearningAgent.load(path, ai_player=Connect4.PLAYER2, seed=5)
 
     assert np.array_equal(loaded.weights, agent.weights)
+    assert loaded.weights.dtype == np.float64
     assert np.isclose(loaded.learning_rate, agent.learning_rate)
     assert np.isclose(loaded.discount, agent.discount)
     assert np.isclose(loaded.epsilon, agent.epsilon)

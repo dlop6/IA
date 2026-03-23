@@ -27,9 +27,9 @@ class TDQLearningAgent(BaseAgent):
         self.rng = random.Random(seed)
 
         if weights is None:
-            self.weights = np.zeros(STATE_ACTION_FEATURE_LENGTH, dtype=np.float32)
+            self.weights = np.zeros(STATE_ACTION_FEATURE_LENGTH, dtype=np.float64)
         else:
-            self.weights = np.asarray(weights, dtype=np.float32)
+            self.weights = np.asarray(weights, dtype=np.float64)
             if self.weights.shape != (STATE_ACTION_FEATURE_LENGTH,):
                 raise ValueError(
                     "Weights must have shape "
@@ -42,7 +42,11 @@ class TDQLearningAgent(BaseAgent):
 
     def q_value(self, game, action):
         """Compute the linear action-value estimate Q(s, a) = w . x(s, a)."""
-        return float(np.dot(self.weights, self.feature_vector(game, action)))
+        features = self.feature_vector(game, action)
+        self._ensure_finite("features", features)
+        q_value = float(np.dot(self.weights, features))
+        self._ensure_finite("q_value", q_value)
+        return q_value
 
     def greedy_action(self, game):
         """Choose the legal action with the highest Q-value; ties break by lower column index."""
@@ -76,6 +80,24 @@ class TDQLearningAgent(BaseAgent):
             return 0.0
         return max(self.q_value(next_game, action) for action in actions)
 
+    def max_abs_q_value(self, game):
+        """Return the largest absolute Q-value among legal actions in the given state."""
+        actions = legal_actions(game)
+        if not actions:
+            return 0.0
+        return max(abs(self.q_value(game, action)) for action in actions)
+
+    def clone(self, *, ai_player=None, epsilon=None, seed=None):
+        """Return a detached copy of the agent suitable for frozen-opponent snapshots."""
+        return TDQLearningAgent(
+            ai_player=self.ai_player if ai_player is None else ai_player,
+            learning_rate=self.learning_rate,
+            discount=self.discount,
+            epsilon=self.epsilon if epsilon is None else epsilon,
+            weights=self.weights.copy(),
+            seed=seed,
+        )
+
     def update(
         self,
         game,
@@ -94,15 +116,22 @@ class TDQLearningAgent(BaseAgent):
         The default value 1.0 is the standard Q-learning target.
         """
         features = self.feature_vector(game, action)
+        self._ensure_finite("features", features)
         current_q = float(np.dot(self.weights, features))
+        self._ensure_finite("current_q", current_q)
 
         if done:
             target = float(reward)
         else:
             target = float(reward) + self.discount * float(bootstrap_scale) * self.max_next_q_value(next_game)
 
+        target = float(np.clip(target, -1.0, 1.0))
+        self._ensure_finite("target", target)
         td_error = target - current_q
+        td_error = float(np.clip(td_error, -1.0, 1.0))
+        self._ensure_finite("td_error", td_error)
         self.weights = self.weights + self.learning_rate * td_error * features
+        self._ensure_finite("weights", self.weights)
         return float(td_error)
 
     def save(self, path):
@@ -111,9 +140,9 @@ class TDQLearningAgent(BaseAgent):
         np.savez(
             path,
             weights=self.weights,
-            learning_rate=np.array(self.learning_rate, dtype=np.float32),
-            discount=np.array(self.discount, dtype=np.float32),
-            epsilon=np.array(self.epsilon, dtype=np.float32),
+            learning_rate=np.array(self.learning_rate, dtype=np.float64),
+            discount=np.array(self.discount, dtype=np.float64),
+            epsilon=np.array(self.epsilon, dtype=np.float64),
         )
 
     @classmethod
@@ -129,3 +158,8 @@ class TDQLearningAgent(BaseAgent):
                 weights=payload["weights"],
                 seed=seed,
             )
+
+    @staticmethod
+    def _ensure_finite(name, value):
+        if not np.isfinite(value).all():
+            raise ValueError(f"{name} contains non-finite values.")
