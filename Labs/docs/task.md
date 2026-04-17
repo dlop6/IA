@@ -41,3 +41,13 @@ sobre las variables ocultas. Debe poder calcular:
    acaba de demostrar numéricamente el concepto de Explain Away, validando que el aumento de
    certeza en una causa (Terremoto) reduce la probabilidad de la otra causa (Robo), a pesar de que
    Robo y Terremoto son variables independientes.
+
+
+
+
+
+Se calculó la probabilidad marginal de que suene la alarma sin evidencia adicional, es decir, P(A=1)**P**(**A**=**1**). Al enumerar todos los estados posibles del modelo y sumar las probabilidades conjuntas donde A=1**A**=**1**, se obtiene:
+
+P(A=1)=0.0199**P**(**A**=**1**)**=**0.0199
+
+Esto significa que la alarma suena aproximadamente en el 1.99%**1.99%** de los casos bajo la distribución definida por el modelo.
